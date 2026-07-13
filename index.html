@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jola Owoeye — Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050a0e;
+    --bg2: #080f14;
+    --surface: #0d1a22;
+    --surface2: #102030;
+    --cyan: #00e5ff;
+    --gold: #ffc94a;
+    --pink: #ff6eb4;
+    --text: #e8f4f8;
+    --muted: #5a7a8a;
+    --border: rgba(0,229,255,0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    cursor: none;
+  }
+
+  .cursor-dot {
+    width: 8px; height: 8px;
+    background: var(--cyan);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1.5px solid rgba(0,229,255,0.5);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: all 0.15s ease;
+  }
+
+  #particles-canvas {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0; pointer-events: none;
+    opacity: 0.5;
+  }
+
+  .stage {
+    position: relative; z-index: 1;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+  }
+
+  .tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--cyan);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.3s forwards;
+  }
+
+  .headline {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(3rem, 9vw, 7.5rem);
+    letter-spacing: -0.04em;
+    line-height: 0.92;
+    text-align: center;
+    opacity: 0;
+    animation: fadeUp 0.9s 0.55s forwards;
+  }
+
+  .headline .word1 { color: var(--text); }
+  .headline .word2 {
+    color: transparent;
+    -webkit-text-stroke: 1.5px rgba(0,229,255,0.4);
+  }
+
+  /* animated ellipsis */
+  .ellipsis::after {
+    content: '';
+    animation: dots 2s steps(4, end) infinite;
+  }
+  @keyframes dots {
+    0%   { content: ''; }
+    25%  { content: '.'; }
+    50%  { content: '..'; }
+    75%  { content: '...'; }
+    100% { content: ''; }
+  }
+
+  /* progress bar */
+  .progress-wrap {
+    margin-top: 56px;
+    width: clamp(200px, 30vw, 380px);
+    opacity: 0;
+    animation: fadeUp 0.8s 1s forwards;
+  }
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .progress-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .progress-pct {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--cyan);
+  }
+  .progress-track {
+    height: 2px;
+    background: var(--surface2);
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--cyan), var(--pink));
+    width: 0%;
+    animation: load 3.5s 1.2s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+  }
+  @keyframes load {
+    to { width: 73%; }
+  }
+
+  /* counter ticks with the bar */
+  .progress-pct {
+    animation: countUp 3.5s 1.2s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+  }
+
+  .footer-sig {
+    position: fixed;
+    bottom: 36px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--cyan);
+    letter-spacing: -0.02em;
+    opacity: 0;
+    animation: fadeIn 1s 1.6s forwards;
+    z-index: 2;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes rotateSlow { to { transform: rotate(360deg); } }
+  @keyframes expand {
+    0%, 100% { width: 40px; opacity: 1; }
+    50% { width: 70px; opacity: 0.4; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="particles-canvas"></canvas>
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<div class="stage">
+  <div class="tag">// portfolio</div>
+  <div class="headline">
+    <div class="word1">career</div>
+    <div class="word2 ellipsis">loading</div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-header">
+      <span class="progress-label">status</span>
+      <span class="progress-pct" id="pct">0%</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill"></div>
+    </div>
+  </div>
+</div>
+
+<div class="footer-sig">JO.</div>
+
+<!--
+  ============================================================
+  FULL PORTFOLIO CONTENT — COMING SOON
+  ============================================================
+
+  SECTIONS HIDDEN BELOW:
+  - NAV (logo + links: Skills, Projects, Experience, Education)
+  - HERO (name, subtitle, CTA buttons, scroll hint)
+  - SKILLS (Swift/SwiftUI 88%, Python 85%, Java 90%, HTML/CSS/JS 80%, AWS 70%, DSA 92%)
+  - PROJECTS (Taven iOS app, Java Games, College Search Tool)
+  - EXPERIENCE (Founder @ Taven, Data & Metrics @ astineboutik, Community Volunteer)
+  - EDUCATION (University of Houston — EE B.S., Seven Lakes HS — STEM)
+  - AWARDS (College Board NAARA, UH Academic Excellence Scholarship, AP Scholar ×2)
+  - FOOTER (email + LinkedIn)
+
+  ============================================================
+-->
+
+<script>
+// CURSOR
+const dot = document.getElementById('cursorDot');
+const ring = document.getElementById('cursorRing');
+let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
+(function animateCursor() {
+  dot.style.left = mouseX + 'px'; dot.style.top = mouseY + 'px';
+  ringX += (mouseX - ringX) * 0.12; ringY += (mouseY - ringY) * 0.12;
+  ring.style.left = ringX + 'px'; ring.style.top = ringY + 'px';
+  requestAnimationFrame(animateCursor);
+})();
+
+// PARTICLES
+const canvas = document.getElementById('particles-canvas');
+const ctx = canvas.getContext('2d');
+let W = canvas.width = window.innerWidth, H = canvas.height = window.innerHeight;
+window.addEventListener('resize', () => { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; });
+
+const particles = Array.from({length: 80}, () => ({
+  x: Math.random() * W, y: Math.random() * H,
+  vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3,
+  r: Math.random() * 1.5 + 0.3,
+  a: Math.random() * 0.5 + 0.1
+}));
+
+function drawParticles() {
+  ctx.clearRect(0, 0, W, H);
+  particles.forEach(p => {
+    p.x += p.vx; p.y += p.vy;
+    if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+    if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(0,229,255,${p.a})`;
+    ctx.fill();
+  });
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 100) {
+        ctx.beginPath();
+        ctx.strokeStyle = `rgba(0,229,255,${0.06 * (1 - dist/100)})`;
+        ctx.lineWidth = 0.5;
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(drawParticles);
+}
+drawParticles();
+
+// COUNTER that tracks the CSS progress bar animation
+const pctEl = document.getElementById('pct');
+const TARGET = 73;
+const DURATION = 3500;
+const DELAY = 1200;
+setTimeout(() => {
+  const start = performance.now();
+  function tick(now) {
+    const t = Math.min((now - start) / DURATION, 1);
+    // same easing as the CSS bar (approx ease-out-expo)
+    const eased = 1 - Math.pow(1 - t, 4);
+    pctEl.textContent = Math.round(eased * TARGET) + '%';
+    if (t < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}, DELAY);
+</script>
+</body>
+</html>
