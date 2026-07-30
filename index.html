@@ -107,49 +107,16 @@
     100% { content: ''; }
   }
 
-  /* progress bar */
-  .progress-wrap {
-    margin-top: 56px;
-    width: clamp(200px, 30vw, 380px);
+  /* small update note, replaces progress bar */
+  .update-note {
+    margin-top: 48px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
     opacity: 0;
     animation: fadeUp 0.8s 1s forwards;
-  }
-  .progress-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-  }
-  .progress-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.65rem;
-    color: var(--muted);
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-  }
-  .progress-pct {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.65rem;
-    color: var(--cyan);
-  }
-  .progress-track {
-    height: 2px;
-    background: var(--surface2);
-    overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--cyan), var(--pink));
-    width: 0%;
-    animation: load 3.5s 1.2s cubic-bezier(0.19, 1, 0.22, 1) forwards;
-  }
-  @keyframes load {
-    to { width: 73%; }
-  }
-
-  /* counter ticks with the bar */
-  .progress-pct {
-    animation: countUp 3.5s 1.2s cubic-bezier(0.19, 1, 0.22, 1) forwards;
   }
 
   .footer-sig {
@@ -175,11 +142,6 @@
     from { opacity: 0; }
     to   { opacity: 1; }
   }
-  @keyframes rotateSlow { to { transform: rotate(360deg); } }
-  @keyframes expand {
-    0%, 100% { width: 40px; opacity: 1; }
-    50% { width: 70px; opacity: 0.4; }
-  }
 </style>
 </head>
 <body>
@@ -195,15 +157,7 @@
     <div class="word2 ellipsis">loading</div>
   </div>
 
-  <div class="progress-wrap">
-    <div class="progress-header">
-      <span class="progress-label">status</span>
-      <span class="progress-pct" id="pct">0%</span>
-    </div>
-    <div class="progress-track">
-      <div class="progress-fill"></div>
-    </div>
-  </div>
+  <div class="update-note">site is being updated — check back soon</div>
 </div>
 
 <div class="footer-sig">JO.</div>
@@ -281,23 +235,7 @@ function drawParticles() {
   requestAnimationFrame(drawParticles);
 }
 drawParticles();
-
-// COUNTER that tracks the CSS progress bar animation
-const pctEl = document.getElementById('pct');
-const TARGET = 73;
-const DURATION = 3500;
-const DELAY = 1200;
-setTimeout(() => {
-  const start = performance.now();
-  function tick(now) {
-    const t = Math.min((now - start) / DURATION, 1);
-    // same easing as the CSS bar (approx ease-out-expo)
-    const eased = 1 - Math.pow(1 - t, 4);
-    pctEl.textContent = Math.round(eased * TARGET) + '%';
-    if (t < 1) requestAnimationFrame(tick);
-  }
-  requestAnimationFrame(tick);
-}, DELAY);
 </script>
 </body>
 </html>
+
